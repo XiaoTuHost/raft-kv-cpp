@@ -18,7 +18,7 @@
 #include "kvServerRPC.pb.h"
 #include "raft.h"
 // 底层存储数据库kv-database
-#include "skipList.h"
+#include "skipList.hpp"
 
 class KvServer : public raftKVRpcProtoc::kvServerRpc{   
 
@@ -33,6 +33,7 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
         std::string m_serializedKVData;
         // TODO SkipList 存储结构
         // your code here
+        SkipList<std::string,std::string> m_skipList;
 
         // clientId -> requestId
         std::unordered_map<std::string,int> m_lastRequestId;
@@ -94,17 +95,25 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
             ar &m_lastRequestId;
         } 
 
-        // TODO 因为还可以拿到跳表机构
+        // 序列化
         std::string getSnapshotData(){
-            // code here
+            // skiplist序列化结果数据存储在对象中
+            // 对象又通过boost序列化到一个串保存返回 形成快照
+            m_serializedKVData = m_skipList.DumpFile();
+            std::stringstream ss;
+            boost::archive::text_oarchive oa(ss);
+            oa << *this;
+            m_serializedKVData.clear();
+            return ss.str();
         }
 
+        // 反序列化
         void parseFromString(const std::string &str){
             std::stringstream ss(str);
             boost::archive::text_iarchive ia(ss);
             ia >> *this;
-            // TODO 跳表结构加载序列化数据
-            // code here
+            m_skipList.LoadFile(m_serializedKVData);
+            m_serializedKVData.clear();
         }
 };
 
