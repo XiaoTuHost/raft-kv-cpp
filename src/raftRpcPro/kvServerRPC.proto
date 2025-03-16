@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+// kvserver负责raft节点与应用程序的交互
+// kvserver通信接口、消息结构
+// kvserver具有 put 和 get 方法
+
+// namespace
+package raftKVRpcProtoc;
+
+// stub服务
+option cc_generic_services = true;
+
+// 日志实体
+message GetArgs{
+  bytes Key = 1 ;
+  bytes ClientId = 2 ;
+  int32 RequestId = 3;
+}
+
+
+message GetReply  {
+  bytes Err = 1;
+  bytes Value = 2;
+}
+
+// Put or Append
+message PutAppendArgs  {
+  bytes Key = 1;
+  bytes  Value = 2 ;
+  bytes  Op = 3;
+  // "Put" or "Append"
+  // You'll have to add definitions here.
+  // Field names must start with capital letters,
+  // otherwise RPC will break.
+  bytes  ClientId = 4;
+  int32  RequestId = 5;
+}
+
+message PutAppendReply  {
+  bytes Err = 1;
+}
+
+//只有raft节点之间才会涉及rpc通信
+service kvServerRpc
+{
+  //PutAppend(args *PutAppendArgs, reply *PutAppendReply)
+  //Get(args *GetArgs, reply *GetReply)
+
+  rpc PutAppend(PutAppendArgs) returns(PutAppendReply);
+  rpc Get (GetArgs) returns (GetReply);
+  
+}
