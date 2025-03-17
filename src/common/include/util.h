@@ -191,7 +191,8 @@ class Op{
         }
 };
 
-//kvserver reply err to clerk
+// kvserver reply err to clerk
+// 
 const std::string OK = "OK";
 const std::string ErrNoKey = "ErrNoKey";
 const std::string ErrWrongLeader = "ErrWrongLeader";

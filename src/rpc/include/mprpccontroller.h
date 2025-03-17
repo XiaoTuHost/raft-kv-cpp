@@ -16,7 +16,7 @@ class MprpcController : public google::protobuf::RpcController{
         MprpcController();
         void Reset();
         bool Failed() const;
-        std::string ErrText() const ;
+        std::string ErrorText() const ;
         void SetFailed(const std::string& reason);
     
         // TODO
@@ -25,6 +25,12 @@ class MprpcController : public google::protobuf::RpcController{
         // bool IsCanceled() const;
         // void NotifyOnCancel(google::protobuf::Closure* callback);
 
+        // 抽象基类，继承后需要实现基类的方法
+        // 否则他也是抽象基类，不能被实例化
+        
+        void StartCancel();
+        bool IsCanceled() const ;
+        void NotifyOnCancel(google::protobuf::Closure* callback);
 
     private:
         // 一些状态

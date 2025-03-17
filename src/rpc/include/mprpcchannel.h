@@ -20,6 +20,7 @@
 class MprpcChannel : public google::protobuf::RpcChannel{
     public:
 
+        // 建立Rpc通道
         MprpcChannel(const std::string& ip,const short& port,bool connectNow);
 
         // 所有通过stub代理对象调用的rpc方法，都走到这里了

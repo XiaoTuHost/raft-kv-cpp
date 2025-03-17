@@ -28,13 +28,14 @@ class Clerk{
         void Init(std::string configFileName);
 
         std::string Get(std::string key);
-        void Get(std::string key,std::string value);
+        void Put(std::string key,std::string value);
         void Append(std::string key,std::string value);
 
     private:
-        // TODO
-        // 保存所有raft节点的fd
         
+        // 保存所有raft节点的fd，即rpc客户端
+        std::vector<std::shared_ptr<RaftServerRpcUtil>> m_servers;
+
         std::string m_clientId;
         int m_requestId;
         int m_recentLeader;
