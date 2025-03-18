@@ -14,6 +14,7 @@ class MprpcConfig{
     private:
         std::unordered_map<std::string,std::string> m_config;
         void Trim(std::string &str);
+        std::pair<std::string,std::string> GetKV(const std::string& str);
 
 };
 #endif

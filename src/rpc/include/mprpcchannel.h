@@ -16,7 +16,7 @@
 #include <vector>
 
 // RPC 通信通道
-
+// TODO zookeeper注册rpc服务，实现动态化调用
 class MprpcChannel : public google::protobuf::RpcChannel{
     public:
 
@@ -33,9 +33,9 @@ class MprpcChannel : public google::protobuf::RpcChannel{
 
     private:
         int m_clientFd;
-        const std::string ip;
-        const uint16_t port;
-        bool newConnect(const char* ip,short port,std::string& errMsg);
+        const std::string m_ip;
+        const uint16_t m_port;
+        bool newConnect(const char* ip,uint16_t,std::string& errMsg);
 };
 
 #endif

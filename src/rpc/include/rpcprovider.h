@@ -32,7 +32,7 @@ class RpcProvider{
         struct ServiceInfo{
             google::protobuf::Service* m_service;   // 保存服务、基类指针
             // 方法名 ---> 方法描述 --->调用具体方法
-            std::unordered_map<std::string,google::protobuf::MethodDescriptor*> m_method;
+            std::unordered_map<std::string,const google::protobuf::MethodDescriptor*> m_method;
         };
         // 服务名 ---> 服务信息 ---> 方法调用...
         std::unordered_map<std::string,ServiceInfo> m_serviceMap;
@@ -40,7 +40,7 @@ class RpcProvider{
         // muduo库回调解耦
         // 解耦应用层和传输层
         void OnConnection(const muduo::net::TcpConnectionPtr&);
-        void OnMessage(const muduo::net::TcpConnectionPtr&,muduo::net::Buffer&,muduo::Timestamp);
+        void OnMessage(const muduo::net::TcpConnectionPtr&,muduo::net::Buffer*,muduo::Timestamp);
 
         // Closure Rpc方法的回调函数 完成调用后用于响应客户端
         void SendRpcResponse(const muduo::net::TcpConnectionPtr&,google::protobuf::Message*);
