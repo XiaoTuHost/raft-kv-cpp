@@ -168,7 +168,7 @@ class Op{
                       << ", RequestId=" << obj.RequestId << ")";
         }
 
-    private:
+    public:
         // 传递参数
         std::string Operation;
         std::string Key;
@@ -176,6 +176,7 @@ class Op{
         std::string ClientId;
         int RequestId;
         
+    private:
         // boost序列化支持
         // 必须为 private 并声明 friend class boost::serialization::access，确保序列化逻辑的封装性。
         // 让序列化类可以访问私有成员

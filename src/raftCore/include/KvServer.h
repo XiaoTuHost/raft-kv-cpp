@@ -31,9 +31,14 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
 
         // 快照数据的序列化缓存
         std::string m_serializedKVData;
-        // TODO SkipList 存储结构
-        // your code here
+        // SkipList 存储结构
         SkipList<std::string,std::string> m_skipList;
+        // 替代上层的kvdb
+        std::unordered_map<std::string,std::string> m_kvDB;
+        // raft -> applyChan
+        // 跟踪等待提交的客户端请求（键为 Raft 日志索引）
+        // TODO 优化值存储->智能指针shared_ptr
+        std::unordered_map<int,LockQueue<Op>*> waitApplyCh;
 
         // clientId -> requestId
         std::unordered_map<std::string,int> m_lastRequestId;
@@ -44,12 +49,12 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
         KvServer() = delete;
         KvServer(int me, int maxraftstate, std::string nodeInforFileName, short port);
     
-        void StartKVServer();
+        // void StartKVServer();
     
         void DprintfKVDB();
 
         bool IfRequestDuplicate(std::string ClientId,int RequestId);
-        // 操作接口
+        // 操作接口 server->kvdb
         void ExecuteAppendOpOnKVDB(Op op);
         void ExecutePutOpOnKVDB(Op op);
         void ExecuteGetOpOnKVDB(Op op, std::string *value, bool *exist);
@@ -60,7 +65,7 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
         //一直等待raft传来的applyCh
         void ReadRaftApplyCommandLoop();
         // 处理从 Raft 层收到的已提交日志条目
-        void GetCommandFromRaft(ApplyMsg msg);
+        void GetCommandFromRaft(ApplyMsg);
         // 将已提交的操作结果发送到等待队列
         bool SendMessageToWaitChan(const Op& op,int raftIndex);
 
