@@ -40,7 +40,7 @@ class DeferClass{
     F m_fun;
 };
 
-#define __CONCAT(a,b)__ a##b
+#define __CONCAT(a,b) a##b
 #define __DEFER__MAKER__(line) DeferClass __CONCAT(defer_placeholder,line) = [&]()
 
 #undef DEFER
