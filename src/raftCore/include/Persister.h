@@ -11,6 +11,8 @@ Raft节点持久化存储
 #include <fstream>
 #include <mutex>
 
+// TODO state和snapshot存储 什么
+
 class Persister{
     public:
         void Save(std::string raftstate,std::string snapshot);
@@ -25,7 +27,8 @@ class Persister{
         void clearSnapshot();
         void clearRaftStateAndSnapshot();
     private:
-        std::mutex m_mtx;
+
+        std::mutex m_mutex;
         std::string m_raftState;
         std::string m_snapshot;
         const std::string m_raftStateFileName;
