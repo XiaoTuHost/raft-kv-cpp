@@ -32,12 +32,12 @@
 // 一些变量状态
 // 网络状态
 constexpr int Disconnected = 0;
-constexpr int Normal = 1;
+constexpr int AppNormal = 1;
 // 投票状态
-constexpr int Killed = 0;
-constexpr int Voted = 1;
-constexpr int Exprie = 2;
-constexpr int Normal = 3;
+constexpr int Killed = 0;   // 节点宕机
+constexpr int Voted = 1;    // 节点已投票
+constexpr int Expire = 2;   // 节点过期
+constexpr int Normal = 3;   // 正常投票
 
 // 类方法名小写开头、驼峰命名
 // rpc方法是大写开头、驼峰命名
@@ -65,6 +65,7 @@ class Raft : public raftRpcProtoc::raftRpc{
 
         // 客户端提交新命令到 Leader 的日志中
         void start(Op command,int* newLogIndex,int* newLogTerm,bool *isLeader);
+        std::vector<ApplyMsg> getApplyLogs();
 
         // 持久化
         void persist();
@@ -75,7 +76,7 @@ class Raft : public raftRpcProtoc::raftRpc{
         void leaderSendSnapshot(int server);
         // RPC
         void InstallSnapshot(const raftRpcProtoc::InstallSnapshotRequest* args,
-                        const raftRpcProtoc::InstallSnapshotResponse* reply);
+                                raftRpcProtoc::InstallSnapshotResponse* reply);
         /*
         Snapshot the service says it has created a snapshot that has
         all info up to and including index. this means the
@@ -83,6 +84,7 @@ class Raft : public raftRpcProtoc::raftRpc{
         that index. Raft should now trim its log as much as possible.
         */
         void snapshot(int index,std::string snapshot);
+        bool condInstallSnapshot(int lastIncludeTerm,int lastIncludeIndex,std::string snapshot);
 
         // TODO
         // other
@@ -97,15 +99,14 @@ class Raft : public raftRpcProtoc::raftRpc{
         void getLastLogIndexAndTerm(int* lastLogIndex,int* lastLogTerm);
         int getLogTermFromLogIndex(const int& logIndex);
         void getPreLogInfo(int server,int* preLogIndex,int* preLogTerm);
-        
-        bool condInstallSnapshot(int lastIncludeTerm,int lastIncludeIndex,std::string snapshot);
-        std::vector<ApplyMsg> getApplyLogs();
-        int getNewCommandIndex();
-        void leaderUpdateCommitIndex();
+        int getSlicesIndexFromLogIndex(int logIndex);
         bool matchLog(int logIndex, int logTerm);
         // 验证给定日志是否比当前新
         bool UpToDate(int index, int term);
-
+        int getNewCommandIndex();
+        void leaderUpdateCommitIndex();
+        
+        
         // 初始化
         // @param peers 其它raft节点的rpc客户端
         // @param me    标记自身节点编号
