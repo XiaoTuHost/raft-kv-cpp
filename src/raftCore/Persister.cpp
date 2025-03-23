@@ -56,7 +56,7 @@ std::string Persister::ReadRaftState(){
 
 }
 
-explicit Persister::Persister(int me)
+Persister::Persister(int me)
     : m_raftStateFileName("raftStatePersist"+std::to_string(me)+".txt")
     , m_snapshotFileName("snapshotPersist"+std::to_string(me)+".txt")
     , m_raftState(0)
@@ -69,7 +69,7 @@ explicit Persister::Persister(int me)
     }else{
         fileOpenFlag=false;
     }
-    std::fstream file(m_snapshotFileName,std::ios::out | std::ios::trunc);
+    file = std::fstream(m_snapshotFileName,std::ios::out | std::ios::trunc);
     if(file.is_open()){
         file.close();
     }else{

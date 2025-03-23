@@ -94,29 +94,51 @@ class LockQueue{
             m_queue.pop();
             return resData;
         }
-        // 超时时间内是否有数据可读
-        bool TimeoutPop(int timeout,T* resData){
-            std::unique_lock<std::mutex> lock(m_mutex);
+        // // 超时时间内是否有数据可读
+        // bool TimeoutPop(int timeout,T* resData){
+        //     std::unique_lock<std::mutex> lock(m_mutex);
 
-            // 计算超时时间点
-            auto now = std::chrono::system_clock::now();
-            int timeout_time = now + std::chrono::milliseconds(timeout);
+        //     // 计算超时时间点
+        //     auto now = std::chrono::system_clock::now();
+        //     int timeout_time = now + std::chrono::milliseconds(timeout);
             
-            while(m_queue.empty()){
-                // wait_until 被其它线程唤醒或是在超时时间后唤醒
-                // std::cv_status::timeout 是一个枚举变量，与cv中的wait_until和wait_for配合使用
-                // 用于判断是否超时
-                if(m_condvariable.wait_until(lock,timeout)==std::cv_status::timeout)
-                    // 超时时间内无变量返回
-                    return false;
-                else
-                    continue;
+        //     while(m_queue.empty()){
+        //         // wait_until 被其它线程唤醒或是在超时时间后唤醒
+        //         // std::cv_status::timeout 是一个枚举变量，与cv中的wait_until和wait_for配合使用
+        //         // 用于判断是否超时
+        //         if(m_condvariable.wait_until(lock, timeout_time) == std::cv_status::timeout)
+        //             // 超时时间内无变量返回
+        //             return false;
+        //         else
+        //             continue;
+        //     }
+        //     T data = m_queue.front();
+        //     m_queue.pop();
+        //     *ResData = data;
+        //     return true;
+        // }
+        bool TimeoutPop(int timeout, T* ResData)  // 添加一个超时时间参数，默认为 50 毫秒
+        {
+          std::unique_lock<std::mutex> lock(m_mutex);
+      
+          // 获取当前时间点，并计算出超时时刻
+          auto now = std::chrono::system_clock::now();
+          auto timeout_time = now + std::chrono::milliseconds(timeout);
+      
+          // 在超时之前，不断检查队列是否为空
+          while (m_queue.empty()) {
+            // 如果已经超时了，就返回一个空对象
+            if (m_condvariable.wait_until(lock, timeout_time) == std::cv_status::timeout) {
+              return false;
+            } else {
+              continue;
             }
-            // 通过传出参数返回值
-            *resData = m_queue.front();
-            m_queue.pop();
-            // 超时时间内有变量返回
-            return true;
+          }
+      
+          T data = m_queue.front();
+          m_queue.pop();
+          *ResData = data;
+          return true;
         }
     private:
         std::queue<T> m_queue;

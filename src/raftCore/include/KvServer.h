@@ -95,7 +95,7 @@ class KvServer : public raftKVRpcProtoc::kvServerRpc{
         friend class boost::serialization::access;
 
         template<class Archive>
-        void serilalized(Archive &ar,const unsigned int version){
+        void serialize(Archive &ar,const unsigned int version){
             ar &m_serializedKVData;
             ar &m_lastRequestId;
         } 

@@ -265,7 +265,7 @@ void Raft::doHeartBeat(){
             myAssert(m_nextIndex[i] >= 1, format("rf.nextIndex[%d] = {%d}", i, m_nextIndex[i]));
             // 节点落后太多
             if(m_nextIndex[i]<=m_lastSnapshotIncludeIndex){
-                std::thread t(Raft::leaderSendSnapshot,this,i);
+                std::thread t(&Raft::leaderSendSnapshot,this,i);
                 t.detach();
                 continue;
             }

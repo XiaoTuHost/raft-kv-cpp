@@ -1,0 +1,10 @@
+# 忽略提交的文件夹
+!bin/test.conf
+.idea
+bin
+cmake-build-debug
+lib
+
+# 忽略提交的文件
+*.out
+*.a

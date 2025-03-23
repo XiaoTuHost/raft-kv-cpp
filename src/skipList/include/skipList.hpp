@@ -114,7 +114,7 @@ SkipListDump 类用于将跳表（SkipList）的键值对数据序列化，以�
 template<typename K,typename V>
 class SkipListDump{
     public:
-        friend boost::serialized::access;
+        friend boost::serialization::access;
         template<typename Archive>
         void serialize(Archive &ar,const unsigned int version){
             ar &m_keyDumpVec;
@@ -374,7 +374,7 @@ std::string SkipList<K,V>::DumpFile(){
     Node<K,V>* cur = this->m_header->forward[0];
     SkipListDump<K,V> dumper;
     while(cur){
-        dumper.insert(cur);
+        dumper.insert(*cur);
         cur=cur->forward[0];
     }
     
@@ -397,7 +397,7 @@ void SkipList<K,V>::LoadFile(const std::string &dumpfileStr){
     ia>>dumper;
     // 回放跳表
     for(int i=0;i<dumper.m_keyDumpVec.size();++i){
-        InsertElement(m_keyDumpVec[i],m_valueDumpVec[i]);
+        InsertElement(dumper.m_keyDumpVec[i],dumper.m_valueDumpVec[i]);
     }
 }
 

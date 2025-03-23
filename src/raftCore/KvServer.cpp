@@ -12,6 +12,7 @@
 KvServer::KvServer(int me, int maxraftstate, std::string nodeInforFileName, short port)
     : m_skipList(6)
 {
+    std::cout<<"111\n";
     std::shared_ptr<Persister> persister = std::make_shared<Persister>(me);
 
     m_me = me;
@@ -412,4 +413,16 @@ void KvServer::ReadSnapshotToInstall(std::string snapshot){
     // 反序列化得到序列化的kv数据 ---> 再次反序列到dumper ---> kv形式存放到dumper ---> skiplist通过kv回放数据
     parseFromString(snapshot);
     
+}
+
+void KvServer::PutAppend(google::protobuf::RpcController *controller, const ::raftKVRpcProtoc::PutAppendArgs *request,
+    ::raftKVRpcProtoc::PutAppendReply *response, ::google::protobuf::Closure *done){
+    PutAppend(request,response);
+    done->Run();
+}
+
+void KvServer::Get(google::protobuf::RpcController *controller, const ::raftKVRpcProtoc::GetArgs *request,
+    ::raftKVRpcProtoc::GetReply *response, ::google::protobuf::Closure *done){
+    Get(request,response);
+    done->Run();
 }

@@ -43,7 +43,7 @@ class Clerk{
         // uuid 返回随机的clientfd
         std::string uuid(){
             std::random_device rd;
-            std::mt19937 gen(rd);
+            std::mt19937 gen(rd());
             std::uniform_int_distribution<> dis(0,9999);
             return std::to_string(dis(gen)) + "-" + std::to_string(time(nullptr));
         }
